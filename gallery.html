@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>nene's Instagramギャラリー 第2弾</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Shippori+Mincho+B1:wght@500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --rose:#8a76ab; --rose-mid:#a894c9; --rose-soft:#c9bce0;
+      --gold:#c98bad; --ink:#3b3542; --muted:#948a9e;
+      --bg:#f7f4fb; --card:#ffffff; --line:#e6def0;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{
+      font-family:'Noto Sans JP',sans-serif; color:var(--ink);
+      background-color:var(--bg);
+      background-image:
+        radial-gradient(ellipse at 15% 25%, rgba(190,170,220,.30) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 30%, rgba(215,195,235,.22) 0%, transparent 50%),
+        radial-gradient(ellipse at 25% 80%, rgba(175,155,215,.26) 0%, transparent 55%),
+        radial-gradient(ellipse at 75% 85%, rgba(205,190,230,.20) 0%, transparent 50%);
+      background-attachment:fixed; min-height:100vh;
+    }
+    header{
+      background:linear-gradient(135deg,var(--rose) 0%,var(--rose-mid) 55%,var(--rose-soft) 100%);
+      color:#fff; padding:22px 20px 18px; text-align:center;
+      position:sticky; top:0; z-index:100;
+      box-shadow:0 6px 24px rgba(122,104,158,.28);
+      border-bottom:2px solid rgba(255,255,255,.35);
+    }
+    header h1{
+      font-family:'Shippori Mincho B1',serif; font-weight:800;
+      font-size:1.32rem; letter-spacing:.04em; margin-bottom:6px;
+      text-shadow:0 2px 10px rgba(70,55,95,.25);
+    }
+    header p{font-size:.82rem; opacity:.92; letter-spacing:.12em;}
+    header p::before,header p::after{content:"\2014"; color:rgba(255,255,255,.6); margin:0 .5em;}
+    .nav-home{
+      display:inline-block; margin-top:12px; background:#fff; color:var(--rose);
+      padding:6px 18px; border-radius:999px; text-decoration:none;
+      font-size:.78rem; font-weight:700; letter-spacing:.03em;
+      box-shadow:0 3px 10px rgba(122,104,158,.22); transition:.2s;
+    }
+    .nav-home:hover{transform:translateY(-1px); box-shadow:0 6px 16px rgba(122,104,158,.3);}
+    .filter-bar{
+      background:rgba(255,255,255,.85); backdrop-filter:blur(6px);
+      border-bottom:1px solid var(--line); padding:12px 16px 10px;
+      display:flex; flex-direction:column; gap:8px; align-items:center;
+      position:sticky; top:78px; z-index:90;
+    }
+    .tab-row,.sub-row{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; align-items:center;}
+    .filter-btn{
+      background:#f3eef9; color:var(--rose);
+      border:1.5px solid #ddd2ec; padding:8px 22px; border-radius:999px;
+      cursor:pointer; font-size:.85rem; font-family:'Noto Sans JP',sans-serif;
+      font-weight:700; letter-spacing:.02em; transition:.22s;
+    }
+    .filter-btn:hover{border-color:var(--rose-soft); transform:translateY(-1px);}
+    .filter-btn.active{
+      background:linear-gradient(135deg,var(--rose),var(--rose-mid));
+      color:#fff; border-color:transparent; box-shadow:0 4px 14px rgba(122,104,158,.32);
+    }
+    .sub-row{display:none;}
+    .sub-row.show{display:flex;}
+    .sub-btn{
+      background:#fff; color:#837099; border:1.5px solid #e2d8ee;
+      padding:5px 14px; border-radius:999px; cursor:pointer;
+      font-size:.76rem; font-family:'Noto Sans JP',sans-serif; font-weight:700; transition:.2s;
+    }
+    .sub-btn:hover{border-color:var(--rose-soft);}
+    .sub-btn.active{background:var(--rose); color:#fff; border-color:transparent;}
+    .review-note{
+      display:none; background:#fff6e8; border-bottom:1px solid #eedcbf;
+      color:#8a6a3a; font-size:.78rem; padding:10px 16px; text-align:center; line-height:1.6;
+    }
+    .review-note.show{display:block;}
+    .count-bar{
+      text-align:center; padding:14px 10px 6px; font-size:.8rem; color:var(--muted);
+      letter-spacing:.05em;
+    }
+    .count-bar::before{content:"\25C8"; color:var(--gold); margin-right:.5em; font-size:.7rem;}
+    .gallery-grid{
+      display:grid; grid-template-columns:repeat(3,1fr); gap:12px;
+      padding:18px; max-width:1080px; margin:0 auto;
+    }
+    @media(min-width:600px){.gallery-grid{gap:14px;padding:24px;}}
+    @media(min-width:900px){.gallery-grid{grid-template-columns:repeat(4,1fr);gap:16px;}}
+    .gallery-item{
+      aspect-ratio:9/16; overflow:hidden; cursor:pointer; position:relative;
+      background:#ece5f4; border-radius:12px;
+      box-shadow:0 2px 10px rgba(122,104,158,.10);
+      border:1px solid rgba(255,255,255,.6); transition:.25s;
+    }
+    .gallery-item:hover{transform:translateY(-2px); box-shadow:0 8px 22px rgba(122,104,158,.18);}
+    .gallery-item img{width:100%;height:100%;object-fit:cover;transition:transform .4s;}
+    .gallery-item:hover img{transform:scale(1.03);}
+    .gallery-item .overlay{
+      position:absolute; inset:auto 0 0 0;
+      background:linear-gradient(transparent,rgba(70,55,95,.62));
+      padding:22px 8px 7px; opacity:0; transition:opacity .25s;
+    }
+    .gallery-item:hover .overlay{opacity:1;}
+    .gallery-item .overlay span{color:#fff;font-size:.62rem;word-break:break-all;}
+    /* Lightbox */
+    #lightbox{display:none;position:fixed;inset:0;background:rgba(30,22,45,.94);
+      z-index:1000;justify-content:center;align-items:center;flex-direction:column;}
+    #lightbox.open{display:flex;}
+    #lightbox img{max-width:92vw;max-height:84vh;object-fit:contain;border-radius:10px;
+      box-shadow:0 12px 50px rgba(0,0,0,.6);}
+    #lightbox-controls{display:flex;gap:14px;margin-top:18px;align-items:center;}
+    .lb-btn{background:rgba(255,255,255,.10);color:#fff;border:1px solid rgba(255,255,255,.24);padding:9px 20px;
+      border-radius:4px;cursor:pointer;font-size:.9rem;font-family:'Noto Sans JP',sans-serif;
+      font-weight:400;letter-spacing:.04em;transition:.2s;}
+    .lb-btn:hover{background:rgba(255,255,255,.22);}
+    .lb-btn.close-btn{background:rgba(122,104,158,.45);border-color:rgba(255,255,255,.2);}
+    .lb-btn.close-btn:hover{background:rgba(122,104,158,.75);}
+    #lb-counter{color:rgba(255,255,255,.8);font-size:.85rem;letter-spacing:.05em;}
+    #lb-filename{color:rgba(255,255,255,.5);font-size:.7rem;margin-top:8px;
+      word-break:break-all;max-width:80vw;text-align:center;}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>nene's Instagramギャラリー 第2弾</h1>
+    <p>アンケート / Q&amp;A</p>
+    <a href="index.html" class="nav-home">← トップへ戻る</a>
+  </header>
+
+  <div class="filter-bar">
+    <div class="tab-row" id="tab-row"></div>
+    <div class="sub-row" id="sub-row"></div>
+  </div>
+  <div class="review-note" id="review-note">
+    ここは「要確認」置き場です（質問だけ・回答だけ等の削除候補）。公開トップからはリンクされていません。
+  </div>
+
+  <div class="count-bar" id="count-bar"></div>
+  <div class="gallery-grid" id="gallery-grid"></div>
+
+  <footer style="background:rgba(255,255,255,.75);border-top:1px solid var(--line);padding:20px;text-align:center;font-size:.72rem;color:var(--muted);letter-spacing:.04em;line-height:1.8;">
+    © 中学受験のねね（@nene_juken_）当サイト内の画像・文章の無断転載・複製・商用利用を禁じます
+  </footer>
+
+  <!-- Lightbox -->
+  <div id="lightbox">
+    <img id="lb-img" src="" alt="">
+    <div id="lb-counter"></div>
+    <div id="lb-filename"></div>
+    <div id="lightbox-controls">
+      <button class="lb-btn" onclick="lbPrev()">◀ 前へ</button>
+      <button class="lb-btn close-btn" onclick="closeLb()">✕ 閉じる</button>
+      <button class="lb-btn" onclick="lbNext()">次へ ▶</button>
+    </div>
+  </div>
+
+  <script>
+    const ALL_IMAGES = [
+  {name: "012854F2-0DB5-46B7-A130-FC302169ED63.JPG", src: "images/" + encodeURIComponent("012854F2-0DB5-46B7-A130-FC302169ED63.JPG"), idx: 0},
+  {name: "028D1BB1-60A5-4878-B911-D5E097D48E8F.JPG", src: "images/" + encodeURIComponent("028D1BB1-60A5-4878-B911-D5E097D48E8F.JPG"), idx: 1},
+  {name: "055EAFC9-E357-47B3-90C9-1BF8CA0D1E7D.jpg", src: "images/" + encodeURIComponent("055EAFC9-E357-47B3-90C9-1BF8CA0D1E7D.jpg"), idx: 2},
+  {name: "057B55D6-5705-4D81-8359-A8B4D902FDE4.jpg", src: "images/" + encodeURIComponent("057B55D6-5705-4D81-8359-A8B4D902FDE4.jpg"), idx: 3},
+  {name: "05B3F8F1-73EE-4885-8362-403A38F20008.jpg", src: "images/" + encodeURIComponent("05B3F8F1-73EE-4885-8362-403A38F20008.jpg"), idx: 4},
+  {name: "05B8996A-8DF0-4E8E-8A07-13932D9B5EBA.jpg", src: "images/" + encodeURIComponent("05B8996A-8DF0-4E8E-8A07-13932D9B5EBA.jpg"), idx: 5},
+  {name: "05DE7C21-D8B7-404E-8312-921B22C1705F.JPG", src: "images/" + encodeURIComponent("05DE7C21-D8B7-404E-8312-921B22C1705F.JPG"), idx: 6},
+  {name: "07EA2C6A-FC54-4197-938F-CDD12DFA9734.jpg", src: "images/" + encodeURIComponent("07EA2C6A-FC54-4197-938F-CDD12DFA9734.jpg"), idx: 7},
+  {name: "0BDDF8D0-6483-434B-ACF1-E9F78C876956.jpg", src: "images/" + encodeURIComponent("0BDDF8D0-6483-434B-ACF1-E9F78C876956.jpg"), idx: 8},
+  {name: "0C392633-894E-403F-A261-5A124701146A.jpg", src: "images/" + encodeURIComponent("0C392633-894E-403F-A261-5A124701146A.jpg"), idx: 9},
+  {name: "0C68AFF8-7DCC-4809-A3CF-B143CE7129F1.jpg", src: "images/" + encodeURIComponent("0C68AFF8-7DCC-4809-A3CF-B143CE7129F1.jpg"), idx: 10},
+  {name: "0D10F69B-B570-4538-9488-FAF864ADC322.jpg", src: "images/" + encodeURIComponent("0D10F69B-B570-4538-9488-FAF864ADC322.jpg"), idx: 11},
+  {name: "0E0B569A-140F-4A4A-AB26-2B3557FF3710.jpg", src: "images/" + encodeURIComponent("0E0B569A-140F-4A4A-AB26-2B3557FF3710.jpg"), idx: 12},
+  {name: "0EDA131D-2627-4EBE-B4AB-30F7329BF2E9.jpg", src: "images/" + encodeURIComponent("0EDA131D-2627-4EBE-B4AB-30F7329BF2E9.jpg"), idx: 13},
+  {name: "0F7133BA-ADCF-4148-A163-EB9137CBEC82.JPG", src: "images/" + encodeURIComponent("0F7133BA-ADCF-4148-A163-EB9137CBEC82.JPG"), idx: 14},
+  {name: "11EAE71D-0A31-43D9-BEF4-B8BE9674593F.JPG", src: "images/" + encodeURIComponent("11EAE71D-0A31-43D9-BEF4-B8BE9674593F.JPG"), idx: 15},
+  {name: "12C18F38-9DB3-4DC1-91AE-70D2CA88B2CB.jpg", src: "images/" + encodeURIComponent("12C18F38-9DB3-4DC1-91AE-70D2CA88B2CB.jpg"), idx: 16},
+  {name: "18B99185-4BD9-4E41-803F-60A78D8324B1.jpg", src: "images/" + encodeURIComponent("18B99185-4BD9-4E41-803F-60A78D8324B1.jpg"), idx: 17},
+  {name: "1C4A601E-D378-447A-929E-F5E6E5255A0E.jpg", src: "images/" + encodeURIComponent("1C4A601E-D378-447A-929E-F5E6E5255A0E.jpg"), idx: 18},
+  {name: "1C679F82-8669-47DD-89BF-A3315D6F06FA.jpg", src: "images/" + encodeURIComponent("1C679F82-8669-47DD-89BF-A3315D6F06FA.jpg"), idx: 19},
+  {name: "1C845A87-356F-4C35-9B47-6332043A68CD.JPG", src: "images/" + encodeURIComponent("1C845A87-356F-4C35-9B47-6332043A68CD.JPG"), idx: 20},
+  {name: "1E3C9CAF-6F87-4EE4-829C-C8D000196565.jpg", src: "images/" + encodeURIComponent("1E3C9CAF-6F87-4EE4-829C-C8D000196565.jpg"), idx: 21},
+  {name: "1EE75E4B-195C-4463-9ABD-FA36AA57E66B.jpg", src: "images/" + encodeURIComponent("1EE75E4B-195C-4463-9ABD-FA36AA57E66B.jpg"), idx: 22},
+  {name: "22D940D4-CDFC-4B9B-BDC5-2245C9DADF34.jpg", src: "images/" + encodeURIComponent("22D940D4-CDFC-4B9B-BDC5-2245C9DADF34.jpg"), idx: 23},
+  {name: "23B874C1-4705-43A9-A996-65FC85CD47B2.JPG", src: "images/" + encodeURIComponent("23B874C1-4705-43A9-A996-65FC85CD47B2.JPG"), idx: 24},
+  {name: "256904E0-46E4-4345-B4F9-B1276BA51CB2.jpg", src: "images/" + encodeURIComponent("256904E0-46E4-4345-B4F9-B1276BA51CB2.jpg"), idx: 25},
+  {name: "276707C0-4A01-4CCF-8EF2-BCA8705300CF.jpg", src: "images/" + encodeURIComponent("276707C0-4A01-4CCF-8EF2-BCA8705300CF.jpg"), idx: 26},
+  {name: "2942C01A-2BE7-41B9-8067-C7BC0129B8C7.jpg", src: "images/" + encodeURIComponent("2942C01A-2BE7-41B9-8067-C7BC0129B8C7.jpg"), idx: 27},
+  {name: "29496A74-01DF-4F91-8A60-4803E382728F.jpg", src: "images/" + encodeURIComponent("29496A74-01DF-4F91-8A60-4803E382728F.jpg"), idx: 28},
+  {name: "29839020-5B09-484B-A6AF-0065B8D4F8D7.jpg", src: "images/" + encodeURIComponent("29839020-5B09-484B-A6AF-0065B8D4F8D7.jpg"), idx: 29},
+  {name: "2A67E110-8923-4F68-ABE3-23FC9E5EF43F.jpg", src: "images/" + encodeURIComponent("2A67E110-8923-4F68-ABE3-23FC9E5EF43F.jpg"), idx: 30},
+  {name: "2A91D732-395C-4F73-86D7-48EBAEDD3C08.jpg", src: "images/" + encodeURIComponent("2A91D732-395C-4F73-86D7-48EBAEDD3C08.jpg"), idx: 31},
+  {name: "2ECFE360-1455-4B38-B8D4-9F755368AE7C.JPG", src: "images/" + encodeURIComponent("2ECFE360-1455-4B38-B8D4-9F755368AE7C.JPG"), idx: 32},
+  {name: "2EFF8181-013A-4044-A277-6250B3AFD092.jpg", src: "images/" + encodeURIComponent("2EFF8181-013A-4044-A277-6250B3AFD092.jpg"), idx: 33},
+  {name: "3184E7C5-5538-46F0-B1B6-D97866B2123D.jpg", src: "images/" + encodeURIComponent("3184E7C5-5538-46F0-B1B6-D97866B2123D.jpg"), idx: 34},
+  {name: "32A7DF69-E276-4832-8306-970677853164.JPG", src: "images/" + encodeURIComponent("32A7DF69-E276-4832-8306-970677853164.JPG"), idx: 35},
+  {name: "34FE4E3D-ECFF-4629-BECC-263966194EE5.jpg", src: "images/" + encodeURIComponent("34FE4E3D-ECFF-4629-BECC-263966194EE5.jpg"), idx: 36},
+  {name: "3631FF70-9150-4493-A73C-05CF9A2827B6.JPG", src: "images/" + encodeURIComponent("3631FF70-9150-4493-A73C-05CF9A2827B6.JPG"), idx: 37},
+  {name: "370302CB-1201-4BEC-9F69-8BF65E6767B0.jpg", src: "images/" + encodeURIComponent("370302CB-1201-4BEC-9F69-8BF65E6767B0.jpg"), idx: 38},
+  {name: "3822E9E6-0167-4F09-AC76-27A1325BD0AE.jpg", src: "images/" + encodeURIComponent("3822E9E6-0167-4F09-AC76-27A1325BD0AE.jpg"), idx: 39},
+  {name: "38992E4F-66A3-4EF8-85AC-D5DDBDE3EEF1.jpg", src: "images/" + encodeURIComponent("38992E4F-66A3-4EF8-85AC-D5DDBDE3EEF1.jpg"), idx: 40},
+  {name: "39B68518-447C-4CF1-8B24-3797A74526D5.jpg", src: "images/" + encodeURIComponent("39B68518-447C-4CF1-8B24-3797A74526D5.jpg"), idx: 41},
+  {name: "3B4AD1C5-D972-40FD-930C-54E8EAA414C6.JPG", src: "images/" + encodeURIComponent("3B4AD1C5-D972-40FD-930C-54E8EAA414C6.JPG"), idx: 42},
+  {name: "3B61394B-2FB0-40C9-995A-EDEF7B0A2903.jpg", src: "images/" + encodeURIComponent("3B61394B-2FB0-40C9-995A-EDEF7B0A2903.jpg"), idx: 43},
+  {name: "3C29915D-8E4C-4528-8F2D-502F4EA43054.JPG", src: "images/" + encodeURIComponent("3C29915D-8E4C-4528-8F2D-502F4EA43054.JPG"), idx: 44},
+  {name: "3C3663CC-7F85-4C9E-9739-5012E746040F.jpg", src: "images/" + encodeURIComponent("3C3663CC-7F85-4C9E-9739-5012E746040F.jpg"), idx: 45},
+  {name: "3CC9FC41-FCC1-44C5-85B2-265F2383CF8A.jpg", src: "images/" + encodeURIComponent("3CC9FC41-FCC1-44C5-85B2-265F2383CF8A.jpg"), idx: 46},
+  {name: "3DB7B349-20B7-42A4-B0BB-A1D15B9EE407.JPG", src: "images/" + encodeURIComponent("3DB7B349-20B7-42A4-B0BB-A1D15B9EE407.JPG"), idx: 47},
+  {name: "3DD86739-107D-4F9C-A78F-0171EE4D8DE7.jpg", src: "images/" + encodeURIComponent("3DD86739-107D-4F9C-A78F-0171EE4D8DE7.jpg"), idx: 48},
+  {name: "3ECDE236-B090-4C06-AECC-968FCA20CAC9.jpg", src: "images/" + encodeURIComponent("3ECDE236-B090-4C06-AECC-968FCA20CAC9.jpg"), idx: 49},
+  {name: "3F758F03-B3D1-41B1-A26A-2D60E998C9E0.jpg", src: "images/" + encodeURIComponent("3F758F03-B3D1-41B1-A26A-2D60E998C9E0.jpg"), idx: 50},
+  {name: "42598F09-6987-417A-9E2A-88C336AEF187.jpg", src: "images/" + encodeURIComponent("42598F09-6987-417A-9E2A-88C336AEF187.jpg"), idx: 51},
+  {name: "44859A61-2FE1-40AE-9CF0-74327C4E9497.JPG", src: "images/" + encodeURIComponent("44859A61-2FE1-40AE-9CF0-74327C4E9497.JPG"), idx: 52},
+  {name: "4552C17E-C5CB-426F-BD39-D0FD8CB9C8B2.jpg", src: "images/" + encodeURIComponent("4552C17E-C5CB-426F-BD39-D0FD8CB9C8B2.jpg"), idx: 53},
+  {name: "463DE142-5EA0-4AF4-A5C3-671550D9EC57.jpg", src: "images/" + encodeURIComponent("463DE142-5EA0-4AF4-A5C3-671550D9EC57.jpg"), idx: 54},
+  {name: "47A1256D-EC75-4DF3-8A3F-79CA38E33EC8.jpg", src: "images/" + encodeURIComponent("47A1256D-EC75-4DF3-8A3F-79CA38E33EC8.jpg"), idx: 55},
+  {name: "47B591CD-D6A7-4860-A4D9-CD446354F47D.jpg", src: "images/" + encodeURIComponent("47B591CD-D6A7-4860-A4D9-CD446354F47D.jpg"), idx: 56},
+  {name: "4CD868D5-9F29-4DBF-90B5-71B9225F7290.jpg", src: "images/" + encodeURIComponent("4CD868D5-9F29-4DBF-90B5-71B9225F7290.jpg"), idx: 57},
+  {name: "4DDC12AB-9F8F-4BF8-A9B4-F45866B64CB2.JPG", src: "images/" + encodeURIComponent("4DDC12AB-9F8F-4BF8-A9B4-F45866B64CB2.JPG"), idx: 58},
+  {name: "4E0B9B5C-DEDD-418C-96E0-442670838E49.jpg", src: "images/" + encodeURIComponent("4E0B9B5C-DEDD-418C-96E0-442670838E49.jpg"), idx: 59},
+  {name: "4EA3F224-8E6F-4018-BC1B-22F5148B8721.jpg", src: "images/" + encodeURIComponent("4EA3F224-8E6F-4018-BC1B-22F5148B8721.jpg"), idx: 60},
+  {name: "5254BDC9-5BCE-4D9F-9AFD-518949ACC537.jpg", src: "images/" + encodeURIComponent("5254BDC9-5BCE-4D9F-9AFD-518949ACC537.jpg"), idx: 61},
+  {name: "53FA21E1-8D6A-43DE-A421-9B8C425D0CA3.jpg", src: "images/" + encodeURIComponent("53FA21E1-8D6A-43DE-A421-9B8C425D0CA3.jpg"), idx: 62},
+  {name: "540CC834-F331-4B00-A02F-9BCE1ED7611B.JPG", src: "images/" + encodeURIComponent("540CC834-F331-4B00-A02F-9BCE1ED7611B.JPG"), idx: 63},
+  {name: "54BC2242-BE85-4681-8043-D80259FDC9C2.JPG", src: "images/" + encodeURIComponent("54BC2242-BE85-4681-8043-D80259FDC9C2.JPG"), idx: 64},
+  {name: "56BCFEE7-DBB4-45F4-8E7E-D1D7A2390F2C.jpg", src: "images/" + encodeURIComponent("56BCFEE7-DBB4-45F4-8E7E-D1D7A2390F2C.jpg"), idx: 65},
+  {name: "573531CB-DA07-425B-B60C-2AB09CAA2170.JPG", src: "images/" + encodeURIComponent("573531CB-DA07-425B-B60C-2AB09CAA2170.JPG"), idx: 66},
+  {name: "588FB066-0476-4950-9DF2-401B8851A3DE.JPG", src: "images/" + encodeURIComponent("588FB066-0476-4950-9DF2-401B8851A3DE.JPG"), idx: 67},
+  {name: "58CB341A-7A73-4F1B-9493-E1EDB7CC6F34.jpg", src: "images/" + encodeURIComponent("58CB341A-7A73-4F1B-9493-E1EDB7CC6F34.jpg"), idx: 68},
+  {name: "592368F2-967C-4202-8F04-80D657ACE8BE.jpg", src: "images/" + encodeURIComponent("592368F2-967C-4202-8F04-80D657ACE8BE.jpg"), idx: 69},
+  {name: "5988CA50-AC70-4C69-AA98-DEAFC9231D1C.jpg", src: "images/" + encodeURIComponent("5988CA50-AC70-4C69-AA98-DEAFC9231D1C.jpg"), idx: 70},
+  {name: "5BAC26AC-EE9A-42AD-AC8D-B215D9CAABE3.jpg", src: "images/" + encodeURIComponent("5BAC26AC-EE9A-42AD-AC8D-B215D9CAABE3.jpg"), idx: 71},
+  {name: "5CE4FC44-A736-4E87-8C69-D740B147C647.jpg", src: "images/" + encodeURIComponent("5CE4FC44-A736-4E87-8C69-D740B147C647.jpg"), idx: 72},
+  {name: "5D24DBCF-4BE6-4D6F-8EC2-5C8EDEA85687.jpg", src: "images/" + encodeURIComponent("5D24DBCF-4BE6-4D6F-8EC2-5C8EDEA85687.jpg"), idx: 73},
+  {name: "5DB5785E-E227-41FD-A073-AE086C0F625B.jpg", src: "images/" + encodeURIComponent("5DB5785E-E227-41FD-A073-AE086C0F625B.jpg"), idx: 74},
+  {name: "5EDB660B-3DC3-4CA7-9F80-4F368B34E45E.jpg", src: "images/" + encodeURIComponent("5EDB660B-3DC3-4CA7-9F80-4F368B34E45E.jpg"), idx: 75},
+  {name: "5FFB60E9-11BF-4598-B6B8-CD2A1EADB6CC.jpg", src: "images/" + encodeURIComponent("5FFB60E9-11BF-4598-B6B8-CD2A1EADB6CC.jpg"), idx: 76},
+  {name: "610798BF-5F61-4383-B6EA-5A328A2FB683.jpg", src: "images/" + encodeURIComponent("610798BF-5F61-4383-B6EA-5A328A2FB683.jpg"), idx: 77},
+  {name: "617521BC-68E3-4B3B-BA49-CA2CAED4EC54.jpg", src: "images/" + encodeURIComponent("617521BC-68E3-4B3B-BA49-CA2CAED4EC54.jpg"), idx: 78},
+  {name: "6554B5B0-0077-4364-A12B-6AB98CBE73FF.jpg", src: "images/" + encodeURIComponent("6554B5B0-0077-4364-A12B-6AB98CBE73FF.jpg"), idx: 79},
+  {name: "6628FA16-DCF3-48CA-9EB8-7E0A51677DF3.jpg", src: "images/" + encodeURIComponent("6628FA16-DCF3-48CA-9EB8-7E0A51677DF3.jpg"), idx: 80},
+  {name: "663F62D6-4A80-49CB-A236-5E97549D0D4A.jpg", src: "images/" + encodeURIComponent("663F62D6-4A80-49CB-A236-5E97549D0D4A.jpg"), idx: 81},
+  {name: "66E3A39E-5E09-4D84-A29C-3BCAA0DC64B4.jpg", src: "images/" + encodeURIComponent("66E3A39E-5E09-4D84-A29C-3BCAA0DC64B4.jpg"), idx: 82},
+  {name: "692CF320-F4D8-4A30-BC18-89CF4A87BF55.jpg", src: "images/" + encodeURIComponent("692CF320-F4D8-4A30-BC18-89CF4A87BF55.jpg"), idx: 83},
+  {name: "693CD6E5-9180-4D64-8F9B-A8E122032D85.jpg", src: "images/" + encodeURIComponent("693CD6E5-9180-4D64-8F9B-A8E122032D85.jpg"), idx: 84},
+  {name: "6A557B15-568A-42DA-8108-6C458129B702.jpg", src: "images/" + encodeURIComponent("6A557B15-568A-42DA-8108-6C458129B702.jpg"), idx: 85},
+  {name: "708E7A1C-C55C-41B0-8360-EB5C5C046EE9.jpg", src: "images/" + encodeURIComponent("708E7A1C-C55C-41B0-8360-EB5C5C046EE9.jpg"), idx: 86},
+  {name: "71B4103A-1356-492A-BA9E-0C6FD82B1CED.JPG", src: "images/" + encodeURIComponent("71B4103A-1356-492A-BA9E-0C6FD82B1CED.JPG"), idx: 87},
+  {name: "762C590F-F444-497A-9F7B-11B2E6D71787.jpg", src: "images/" + encodeURIComponent("762C590F-F444-497A-9F7B-11B2E6D71787.jpg"), idx: 88},
+  {name: "7947B8DB-3A93-443E-8B05-C0C75E6BA75F.jpg", src: "images/" + encodeURIComponent("7947B8DB-3A93-443E-8B05-C0C75E6BA75F.jpg"), idx: 89},
+  {name: "79B49602-0B7B-480F-B0E6-4C260C39E126.JPG", src: "images/" + encodeURIComponent("79B49602-0B7B-480F-B0E6-4C260C39E126.JPG"), idx: 90},
+  {name: "7B55EB34-4447-4403-91DE-ABB6468438B1.jpg", src: "images/" + encodeURIComponent("7B55EB34-4447-4403-91DE-ABB6468438B1.jpg"), idx: 91},
+  {name: "7CE9E096-6A87-4A7C-B496-E9976904E503.jpg", src: "images/" + encodeURIComponent("7CE9E096-6A87-4A7C-B496-E9976904E503.jpg"), idx: 92},
+  {name: "7DCC40EB-F999-41A0-BD44-F583493CE2AA.jpg", src: "images/" + encodeURIComponent("7DCC40EB-F999-41A0-BD44-F583493CE2AA.jpg"), idx: 93},
+  {name: "8041BCBC-4ECE-4924-BB3C-54763322423C.jpg", src: "images/" + encodeURIComponent("8041BCBC-4ECE-4924-BB3C-54763322423C.jpg"), idx: 94},
+  {name: "826C848D-C65F-441F-A134-0EDF6E25FB9E.jpg", src: "images/" + encodeURIComponent("826C848D-C65F-441F-A134-0EDF6E25FB9E.jpg"), idx: 95},
+  {name: "828B2905-6AD7-4671-8820-A60FF60130E7.jpg", src: "images/" + encodeURIComponent("828B2905-6AD7-4671-8820-A60FF60130E7.jpg"), idx: 96},
+  {name: "84064C80-135C-43F3-8062-C6EDBE826C5F.JPG", src: "images/" + encodeURIComponent("84064C80-135C-43F3-8062-C6EDBE826C5F.JPG"), idx: 97},
+  {name: "84983054-4FBD-491E-AF0F-4363BF6FD57D.JPG", src: "images/" + encodeURIComponent("84983054-4FBD-491E-AF0F-4363BF6FD57D.JPG"), idx: 98},
+  {name: "8764658F-8EBA-4F3A-B84E-719855A80E59.jpg", src: "images/" + encodeURIComponent("8764658F-8EBA-4F3A-B84E-719855A80E59.jpg"), idx: 99},
+  {name: "877D1056-30C9-4577-AAF7-D5386AE91AAA.jpg", src: "images/" + encodeURIComponent("877D1056-30C9-4577-AAF7-D5386AE91AAA.jpg"), idx: 100},
+  {name: "87A85660-83AF-4AAB-8931-0A96BE871C3D.JPG", src: "images/" + encodeURIComponent("87A85660-83AF-4AAB-8931-0A96BE871C3D.JPG"), idx: 101},
+  {name: "8A5F58CC-659C-4EFC-B778-6017368D9144.jpg", src: "images/" + encodeURIComponent("8A5F58CC-659C-4EFC-B778-6017368D9144.jpg"), idx: 102},
+  {name: "8B7B5997-5D69-4148-B586-20E7623F1F46.jpg", src: "images/" + encodeURIComponent("8B7B5997-5D69-4148-B586-20E7623F1F46.jpg"), idx: 103},
+  {name: "8BC68758-7D4C-4E8E-B1E7-FD49F026C3BC.jpg", src: "images/" + encodeURIComponent("8BC68758-7D4C-4E8E-B1E7-FD49F026C3BC.jpg"), idx: 104},
+  {name: "8EFC9404-ADF8-4BE8-9FA7-DC5334BBB93C.jpg", src: "images/" + encodeURIComponent("8EFC9404-ADF8-4BE8-9FA7-DC5334BBB93C.jpg"), idx: 105},
+  {name: "8F5113F4-8483-482B-9EA4-42BD4931F9B1.jpg", src: "images/" + encodeURIComponent("8F5113F4-8483-482B-9EA4-42BD4931F9B1.jpg"), idx: 106},
+  {name: "8F7D8B6F-99D2-4B67-B8FD-7D224BD0423E.JPG", src: "images/" + encodeURIComponent("8F7D8B6F-99D2-4B67-B8FD-7D224BD0423E.JPG"), idx: 107},
+  {name: "8FB9450B-1FFD-4AA2-AE3A-2F1A33008BDC.jpg", src: "images/" + encodeURIComponent("8FB9450B-1FFD-4AA2-AE3A-2F1A33008BDC.jpg"), idx: 108},
+  {name: "905035B9-D532-42CF-BE96-1F22F3F8C68A.JPG", src: "images/" + encodeURIComponent("905035B9-D532-42CF-BE96-1F22F3F8C68A.JPG"), idx: 109},
+  {name: "92A62884-E736-444A-ACA9-68D391D24EC0.jpg", src: "images/" + encodeURIComponent("92A62884-E736-444A-ACA9-68D391D24EC0.jpg"), idx: 110},
+  {name: "93C4D72C-1AF3-429C-BDFB-F3F0DE6CC0FF.jpg", src: "images/" + encodeURIComponent("93C4D72C-1AF3-429C-BDFB-F3F0DE6CC0FF.jpg"), idx: 111},
+  {name: "97460855-E7D0-4F19-92E1-A362C2059D39.jpg", src: "images/" + encodeURIComponent("97460855-E7D0-4F19-92E1-A362C2059D39.jpg"), idx: 112},
+  {name: "9AC6BE90-8859-4B8F-BF35-8F22B387FE09.JPG", src: "images/" + encodeURIComponent("9AC6BE90-8859-4B8F-BF35-8F22B387FE09.JPG"), idx: 113},
+  {name: "9C871E92-4CF2-4E34-99F6-29BC55A44BA1.jpg", src: "images/" + encodeURIComponent("9C871E92-4CF2-4E34-99F6-29BC55A44BA1.jpg"), idx: 114},
+  {name: "9EDCA599-AFDF-4F24-AB04-7A50EC4D5627.JPG", src: "images/" + encodeURIComponent("9EDCA599-AFDF-4F24-AB04-7A50EC4D5627.JPG"), idx: 115},
+  {name: "9F54F614-D1E1-4A0D-8B19-33EAF0C45BD2.JPG", src: "images/" + encodeURIComponent("9F54F614-D1E1-4A0D-8B19-33EAF0C45BD2.JPG"), idx: 116},
+  {name: "9F8429AC-EF15-4256-ADD6-881970A60A82.JPG", src: "images/" + encodeURIComponent("9F8429AC-EF15-4256-ADD6-881970A60A82.JPG"), idx: 117},
+  {name: "A138FB87-E89B-4649-AF40-184C0049B505.jpg", src: "images/" + encodeURIComponent("A138FB87-E89B-4649-AF40-184C0049B505.jpg"), idx: 118},
+  {name: "A15CC202-5A36-4DCF-BA1B-7FB686DE15DF.jpg", src: "images/" + encodeURIComponent("A15CC202-5A36-4DCF-BA1B-7FB686DE15DF.jpg"), idx: 119},
+  {name: "A57ED42F-1AC7-4F5E-9593-FA74CE21C889.JPG", src: "images/" + encodeURIComponent("A57ED42F-1AC7-4F5E-9593-FA74CE21C889.JPG"), idx: 120},
+  {name: "A58F7535-5400-473B-8C01-B7F18FDAF1E6.jpg", src: "images/" + encodeURIComponent("A58F7535-5400-473B-8C01-B7F18FDAF1E6.jpg"), idx: 121},
+  {name: "A72B2B54-7E29-4F4F-B748-59CB4311810D.jpg", src: "images/" + encodeURIComponent("A72B2B54-7E29-4F4F-B748-59CB4311810D.jpg"), idx: 122},
+  {name: "A9A98639-C52F-45A6-BDCF-80067813A4CD.jpg", src: "images/" + encodeURIComponent("A9A98639-C52F-45A6-BDCF-80067813A4CD.jpg"), idx: 123},
+  {name: "AB7FB2C7-1FCA-4943-9EE0-9208C068C125.JPG", src: "images/" + encodeURIComponent("AB7FB2C7-1FCA-4943-9EE0-9208C068C125.JPG"), idx: 124},
+  {name: "AD92B826-CDE8-4783-B74A-3A83B872D147.jpg", src: "images/" + encodeURIComponent("AD92B826-CDE8-4783-B74A-3A83B872D147.jpg"), idx: 125},
+  {name: "AE8E54B0-93ED-45CA-B2FA-BEF386149D15.jpg", src: "images/" + encodeURIComponent("AE8E54B0-93ED-45CA-B2FA-BEF386149D15.jpg"), idx: 126},
+  {name: "B0B49031-D3CA-4D9D-9129-E929F248B71A.jpg", src: "images/" + encodeURIComponent("B0B49031-D3CA-4D9D-9129-E929F248B71A.jpg"), idx: 127},
+  {name: "B1393D56-62B0-4248-ADDE-8DF7EF55B85B.jpg", src: "images/" + encodeURIComponent("B1393D56-62B0-4248-ADDE-8DF7EF55B85B.jpg"), idx: 128},
+  {name: "B143804D-0E03-4A24-8673-AEA38F1CD8ED.jpg", src: "images/" + encodeURIComponent("B143804D-0E03-4A24-8673-AEA38F1CD8ED.jpg"), idx: 129},
+  {name: "B2C351E9-A2FB-4864-80A5-F894A99089F1.JPG", src: "images/" + encodeURIComponent("B2C351E9-A2FB-4864-80A5-F894A99089F1.JPG"), idx: 130},
+  {name: "B2C89590-040B-401C-8FDB-C6B786CB2D5B.jpg", src: "images/" + encodeURIComponent("B2C89590-040B-401C-8FDB-C6B786CB2D5B.jpg"), idx: 131},
+  {name: "B65EA21D-09A8-472D-90D5-B2F6F8AB85D2.jpg", src: "images/" + encodeURIComponent("B65EA21D-09A8-472D-90D5-B2F6F8AB85D2.jpg"), idx: 132},
+  {name: "B7310092-87F7-4FB6-9A55-9949462D6D15.jpg", src: "images/" + encodeURIComponent("B7310092-87F7-4FB6-9A55-9949462D6D15.jpg"), idx: 133},
+  {name: "BC63AF2C-036B-42E9-B1CD-A7E7166EA07A.jpg", src: "images/" + encodeURIComponent("BC63AF2C-036B-42E9-B1CD-A7E7166EA07A.jpg"), idx: 134},
+  {name: "BC6ECE6E-D5E7-4A1E-8C2E-A81D1BFE084A.jpg", src: "images/" + encodeURIComponent("BC6ECE6E-D5E7-4A1E-8C2E-A81D1BFE084A.jpg"), idx: 135},
+  {name: "BD4A966B-C03C-49D8-A27E-CD13B86A4031.jpg", src: "images/" + encodeURIComponent("BD4A966B-C03C-49D8-A27E-CD13B86A4031.jpg"), idx: 136},
+  {name: "BD771829-2BDC-47A4-9540-7E72E880E07D.jpg", src: "images/" + encodeURIComponent("BD771829-2BDC-47A4-9540-7E72E880E07D.jpg"), idx: 137},
+  {name: "BD9149E8-8B34-473C-B39F-2A0D8360C6FB.jpg", src: "images/" + encodeURIComponent("BD9149E8-8B34-473C-B39F-2A0D8360C6FB.jpg"), idx: 138},
+  {name: "C606FEBD-D562-4B5F-AEE5-D94AF845E7AF.jpg", src: "images/" + encodeURIComponent("C606FEBD-D562-4B5F-AEE5-D94AF845E7AF.jpg"), idx: 139},
+  {name: "C994ACEF-E326-461D-9779-3BEE5739C317.jpg", src: "images/" + encodeURIComponent("C994ACEF-E326-461D-9779-3BEE5739C317.jpg"), idx: 140},
+  {name: "C9AD597F-D57E-45AD-B039-2383D3442B7F.jpg", src: "images/" + encodeURIComponent("C9AD597F-D57E-45AD-B039-2383D3442B7F.jpg"), idx: 141},
+  {name: "CA191463-4A51-47EA-A5D8-9DD96DDED352.jpg", src: "images/" + encodeURIComponent("CA191463-4A51-47EA-A5D8-9DD96DDED352.jpg"), idx: 142},
+  {name: "CA2FFAC4-E589-45E0-9261-788CF4CDA871.JPG", src: "images/" + encodeURIComponent("CA2FFAC4-E589-45E0-9261-788CF4CDA871.JPG"), idx: 143},
+  {name: "CA401B01-31AC-4788-87D8-5C23AA6E1E5E.JPG", src: "images/" + encodeURIComponent("CA401B01-31AC-4788-87D8-5C23AA6E1E5E.JPG"), idx: 144},
+  {name: "CA8E3083-4114-43B6-9F59-2FC07978D508.jpg", src: "images/" + encodeURIComponent("CA8E3083-4114-43B6-9F59-2FC07978D508.jpg"), idx: 145},
+  {name: "CFCA6412-16DB-42AA-B75D-77E5922818B9.jpg", src: "images/" + encodeURIComponent("CFCA6412-16DB-42AA-B75D-77E5922818B9.jpg"), idx: 146},
+  {name: "CFE6E391-C3EE-4C72-BB0B-A75CCB4B5F07.jpg", src: "images/" + encodeURIComponent("CFE6E391-C3EE-4C72-BB0B-A75CCB4B5F07.jpg"), idx: 147},
+  {name: "D04C4FB7-52F9-4878-9032-3E00FB19586B.jpg", src: "images/" + encodeURIComponent("D04C4FB7-52F9-4878-9032-3E00FB19586B.jpg"), idx: 148},
+  {name: "D1B5B880-046C-4AEA-A85E-7C8DB61D0392.jpg", src: "images/" + encodeURIComponent("D1B5B880-046C-4AEA-A85E-7C8DB61D0392.jpg"), idx: 149},
+  {name: "D2EDA364-1C66-4B9B-B4EF-E6364659A41F.jpg", src: "images/" + encodeURIComponent("D2EDA364-1C66-4B9B-B4EF-E6364659A41F.jpg"), idx: 150},
+  {name: "D486E97F-0546-46A0-B01E-B89D79103ACE.JPG", src: "images/" + encodeURIComponent("D486E97F-0546-46A0-B01E-B89D79103ACE.JPG"), idx: 151},
+  {name: "D58D2DE7-F6A0-459C-BBFC-44EAB2937188.JPG", src: "images/" + encodeURIComponent("D58D2DE7-F6A0-459C-BBFC-44EAB2937188.JPG"), idx: 152},
+  {name: "D68D9C48-9588-4E6D-9407-98E0158D5D58.jpg", src: "images/" + encodeURIComponent("D68D9C48-9588-4E6D-9407-98E0158D5D58.jpg"), idx: 153},
+  {name: "D6F13B65-0A45-4B9C-8BB4-A6C88B06B534.JPG", src: "images/" + encodeURIComponent("D6F13B65-0A45-4B9C-8BB4-A6C88B06B534.JPG"), idx: 154},
+  {name: "D6F92ACB-BA81-4E84-B599-F2CA43014101.jpg", src: "images/" + encodeURIComponent("D6F92ACB-BA81-4E84-B599-F2CA43014101.jpg"), idx: 155},
+  {name: "D899748D-E830-4F04-9F5C-7E5191B82788.JPG", src: "images/" + encodeURIComponent("D899748D-E830-4F04-9F5C-7E5191B82788.JPG"), idx: 156},
+  {name: "D89AB17E-57D8-4AF9-99BE-8A5A3821478D.jpg", src: "images/" + encodeURIComponent("D89AB17E-57D8-4AF9-99BE-8A5A3821478D.jpg"), idx: 157},
+  {name: "D8AC8099-531C-48F7-B64C-1E3034470950.jpg", src: "images/" + encodeURIComponent("D8AC8099-531C-48F7-B64C-1E3034470950.jpg"), idx: 158},
+  {name: "DAD323DE-4A9C-43C4-B176-09AB4D41E968.jpg", src: "images/" + encodeURIComponent("DAD323DE-4A9C-43C4-B176-09AB4D41E968.jpg"), idx: 159},
+  {name: "DBE1CDC1-733C-41A5-B4B4-F405451BFAE7.jpg", src: "images/" + encodeURIComponent("DBE1CDC1-733C-41A5-B4B4-F405451BFAE7.jpg"), idx: 160},
+  {name: "DC992F32-8423-4EBF-87A8-F0EA4E23E27E.jpg", src: "images/" + encodeURIComponent("DC992F32-8423-4EBF-87A8-F0EA4E23E27E.jpg"), idx: 161},
+  {name: "DCCED088-E6ED-4720-953E-AA0760F8A4EA.jpg", src: "images/" + encodeURIComponent("DCCED088-E6ED-4720-953E-AA0760F8A4EA.jpg"), idx: 162},
+  {name: "E07706C3-E1C7-4A56-A2F0-3BC18E7F35EB.jpg", src: "images/" + encodeURIComponent("E07706C3-E1C7-4A56-A2F0-3BC18E7F35EB.jpg"), idx: 163},
+  {name: "E275BDBA-2FB8-444D-81A3-DB431D7DBA73.jpg", src: "images/" + encodeURIComponent("E275BDBA-2FB8-444D-81A3-DB431D7DBA73.jpg"), idx: 164},
+  {name: "E29E06D5-7792-4252-B792-0891E8A42C80.jpg", src: "images/" + encodeURIComponent("E29E06D5-7792-4252-B792-0891E8A42C80.jpg"), idx: 165},
+  {name: "E316DE9C-A574-44F5-B332-5A37AEAFFEEB.JPG", src: "images/" + encodeURIComponent("E316DE9C-A574-44F5-B332-5A37AEAFFEEB.JPG"), idx: 166},
+  {name: "E3BF59BD-4B22-445D-BEA8-A34910E4EF49.jpg", src: "images/" + encodeURIComponent("E3BF59BD-4B22-445D-BEA8-A34910E4EF49.jpg"), idx: 167},
+  {name: "E48BD7A2-E333-4428-BAC7-A91079CF1DEA.JPG", src: "images/" + encodeURIComponent("E48BD7A2-E333-4428-BAC7-A91079CF1DEA.JPG"), idx: 168},
+  {name: "E5758D99-1E1D-40B0-ADAB-8B12FE26304D.jpg", src: "images/" + encodeURIComponent("E5758D99-1E1D-40B0-ADAB-8B12FE26304D.jpg"), idx: 169},
+  {name: "E585D010-66C2-449F-860C-EA2A88F40EE2.jpg", src: "images/" + encodeURIComponent("E585D010-66C2-449F-860C-EA2A88F40EE2.jpg"), idx: 170},
+  {name: "E7BA2C25-A14C-4DAF-8DAC-11E3CF8A86C1.JPG", src: "images/" + encodeURIComponent("E7BA2C25-A14C-4DAF-8DAC-11E3CF8A86C1.JPG"), idx: 171},
+  {name: "E7E3BE27-9657-4975-8707-B2795F995ADE.jpg", src: "images/" + encodeURIComponent("E7E3BE27-9657-4975-8707-B2795F995ADE.jpg"), idx: 172},
+  {name: "E809A36F-FD9C-4FEE-ADCB-C93493B75448.jpg", src: "images/" + encodeURIComponent("E809A36F-FD9C-4FEE-ADCB-C93493B75448.jpg"), idx: 173},
+  {name: "E85D0672-0CD1-4F6E-BA88-D5AD7A9D4A8E.jpg", src: "images/" + encodeURIComponent("E85D0672-0CD1-4F6E-BA88-D5AD7A9D4A8E.jpg"), idx: 174},
+  {name: "E9B4EBBA-F315-4440-8B92-6D05F659FA92.jpg", src: "images/" + encodeURIComponent("E9B4EBBA-F315-4440-8B92-6D05F659FA92.jpg"), idx: 175},
+  {name: "EB1289C7-AEEE-4F88-8935-BEE282E802F8.jpg", src: "images/" + encodeURIComponent("EB1289C7-AEEE-4F88-8935-BEE282E802F8.jpg"), idx: 176},
+  {name: "EC1B1988-BA1F-44AD-A783-F5DE24A98318.jpg", src: "images/" + encodeURIComponent("EC1B1988-BA1F-44AD-A783-F5DE24A98318.jpg"), idx: 177},
+  {name: "ECDE00FD-C770-4D82-9970-91D984D9BB25.jpg", src: "images/" + encodeURIComponent("ECDE00FD-C770-4D82-9970-91D984D9BB25.jpg"), idx: 178},
+  {name: "EF01C515-5883-494B-B46D-ACEB3DF6B9C1.jpg", src: "images/" + encodeURIComponent("EF01C515-5883-494B-B46D-ACEB3DF6B9C1.jpg"), idx: 179},
+  {name: "F1C4E951-24DE-409C-88D9-41A7C9582DB0.jpg", src: "images/" + encodeURIComponent("F1C4E951-24DE-409C-88D9-41A7C9582DB0.jpg"), idx: 180},
+  {name: "F218FD20-F806-4E87-88FA-7C8AFE61527F.jpg", src: "images/" + encodeURIComponent("F218FD20-F806-4E87-88FA-7C8AFE61527F.jpg"), idx: 181},
+  {name: "F2E68D6F-463F-43E8-92AA-14BE4648DDC9.jpg", src: "images/" + encodeURIComponent("F2E68D6F-463F-43E8-92AA-14BE4648DDC9.jpg"), idx: 182},
+  {name: "F3C89816-D4B7-47FC-95B7-AC18A276EA2E.JPG", src: "images/" + encodeURIComponent("F3C89816-D4B7-47FC-95B7-AC18A276EA2E.JPG"), idx: 183},
+  {name: "F4CF0497-6577-4183-823A-B28B14828E45.jpg", src: "images/" + encodeURIComponent("F4CF0497-6577-4183-823A-B28B14828E45.jpg"), idx: 184},
+  {name: "F57F7FBE-031A-49C6-A55E-C88DE26921F2.jpg", src: "images/" + encodeURIComponent("F57F7FBE-031A-49C6-A55E-C88DE26921F2.jpg"), idx: 185},
+  {name: "F5CBD92E-7E6E-47C5-B648-1C4006372CB5.JPG", src: "images/" + encodeURIComponent("F5CBD92E-7E6E-47C5-B648-1C4006372CB5.JPG"), idx: 186},
+  {name: "F9427EF7-C23B-45BC-BD6F-02CB1534EC4F.jpg", src: "images/" + encodeURIComponent("F9427EF7-C23B-45BC-BD6F-02CB1534EC4F.jpg"), idx: 187},
+  {name: "FA0058CD-BDE5-4131-9833-5A984B38294A.jpg", src: "images/" + encodeURIComponent("FA0058CD-BDE5-4131-9833-5A984B38294A.jpg"), idx: 188},
+  {name: "FA338803-F04D-4B87-A396-ADC2E3E43658.jpg", src: "images/" + encodeURIComponent("FA338803-F04D-4B87-A396-ADC2E3E43658.jpg"), idx: 189},
+  {name: "FB1A9B8C-5E77-4474-9A44-1971EB675E90.jpg", src: "images/" + encodeURIComponent("FB1A9B8C-5E77-4474-9A44-1971EB675E90.jpg"), idx: 190},
+  {name: "FD7CB371-085C-4B57-A517-C03CA91CE2BE.jpg", src: "images/" + encodeURIComponent("FD7CB371-085C-4B57-A517-C03CA91CE2BE.jpg"), idx: 191},
+  {name: "FDC3FD4B-551F-467F-9C18-2D4B7D2FF1DB.jpg", src: "images/" + encodeURIComponent("FDC3FD4B-551F-467F-9C18-2D4B7D2FF1DB.jpg"), idx: 192},
+  {name: "IMG_0394.JPEG", src: "images/" + encodeURIComponent("IMG_0394.JPEG"), idx: 193},
+  {name: "IMG_0396.JPEG", src: "images/" + encodeURIComponent("IMG_0396.JPEG"), idx: 194},
+  {name: "IMG_0397.JPEG", src: "images/" + encodeURIComponent("IMG_0397.JPEG"), idx: 195},
+  {name: "IMG_0440.JPEG", src: "images/" + encodeURIComponent("IMG_0440.JPEG"), idx: 196},
+  {name: "IMG_0473.JPEG", src: "images/" + encodeURIComponent("IMG_0473.JPEG"), idx: 197},
+  {name: "IMG_0720.JPEG", src: "images/" + encodeURIComponent("IMG_0720.JPEG"), idx: 198},
+  {name: "IMG_0730.JPEG", src: "images/" + encodeURIComponent("IMG_0730.JPEG"), idx: 199},
+  {name: "IMG_0844.JPEG", src: "images/" + encodeURIComponent("IMG_0844.JPEG"), idx: 200},
+  {name: "IMG_1129.JPEG", src: "images/" + encodeURIComponent("IMG_1129.JPEG"), idx: 201},
+  {name: "IMG_6972.jpg", src: "images/" + encodeURIComponent("IMG_6972.jpg"), idx: 202},
+  {name: "IMG_7416.jpg", src: "images/" + encodeURIComponent("IMG_7416.jpg"), idx: 203},
+  {name: "IMG_7419.jpg", src: "images/" + encodeURIComponent("IMG_7419.jpg"), idx: 204},
+  {name: "IMG_7462.jpg", src: "images/" + encodeURIComponent("IMG_7462.jpg"), idx: 205},
+  {name: "IMG_7471.jpg", src: "images/" + encodeURIComponent("IMG_7471.jpg"), idx: 206},
+  {name: "IMG_8815.jpg", src: "images/" + encodeURIComponent("IMG_8815.jpg"), idx: 207},
+  {name: "IMG_8821.jpg", src: "images/" + encodeURIComponent("IMG_8821.jpg"), idx: 208},
+  {name: "IMG_9058.JPEG", src: "images/" + encodeURIComponent("IMG_9058.JPEG"), idx: 209},
+  {name: "IMG_9086.JPEG", src: "images/" + encodeURIComponent("IMG_9086.JPEG"), idx: 210},
+  {name: "IMG_9087.JPEG", src: "images/" + encodeURIComponent("IMG_9087.JPEG"), idx: 211},
+  {name: "IMG_9097.JPEG", src: "images/" + encodeURIComponent("IMG_9097.JPEG"), idx: 212},
+  {name: "IMG_9098.JPEG", src: "images/" + encodeURIComponent("IMG_9098.JPEG"), idx: 213},
+  {name: "IMG_9118.JPEG", src: "images/" + encodeURIComponent("IMG_9118.JPEG"), idx: 214},
+  {name: "IMG_9762.JPEG", src: "images/" + encodeURIComponent("IMG_9762.JPEG"), idx: 215},
+  {name: "IMG_9954.JPEG", src: "images/" + encodeURIComponent("IMG_9954.JPEG"), idx: 216},
+  {name: "IMG_9976.JPEG", src: "images/" + encodeURIComponent("IMG_9976.JPEG"), idx: 217},
+];
+
+    const CAT_BY_IDX = ["gakko","juku","poll","benkyo","poll","poll","gakko","gakko","benkyo","kokoro","gakko","juku","benkyo","gakko","gakko","benkyo","kokoro","benkyo","poll","gakko","gakko","benkyo","juku","gakko","gakko","poll","benkyo","gakko","gakko","kokoro","gakko","benkyo","gakko","poll","poll","gakko","gakko","juku","sonota","gakko","gakko","kokoro","gakko","kokoro","benkyo","benkyo","kokoro","juku","juku","gakko","poll","sonota","benkyo","poll","juku","juku","sonota","poll","benkyo","benkyo","gakko","poll","gakko","poll","gakko","gakko","kokoro","gakko","benkyo","kokoro","gakko","benkyo","gakko","kokoro","gakko","benkyo","juku","gakko","sonota","gakko","juku","sonota","sonota","benkyo","juku","benkyo","gakko","juku","kokoro","poll","juku","gakko","gakko","juku","kokoro","benkyo","gakko","sonota","kokoro","benkyo","sonota","gakko","kokoro","gakko","poll","gakko","gakko","benkyo","gakko","gakko","gakko","poll","poll","gakko","sonota","sonota","benkyo","juku","juku","gakko","gakko","gakko","gakko","gakko","juku","poll","juku","kokoro","benkyo","juku","kokoro","gakko","juku","benkyo","poll","gakko","juku","poll","gakko","gakko","juku","juku","juku","gakko","poll","gakko","juku","benkyo","gakko","juku","benkyo","juku","poll","benkyo","poll","poll","gakko","kokoro","kokoro","kokoro","benkyo","benkyo","benkyo","gakko","poll","gakko","gakko","gakko","kokoro","benkyo","gakko","benkyo","benkyo","poll","gakko","benkyo","poll","kokoro","benkyo","juku","juku","gakko","sonota","poll","kokoro","kokoro","juku","gakko","sonota","benkyo","poll","poll","gakko","gakko","kokoro","sonota","sonota","sonota","gakko","gakko","kokoro","gakko","poll","benkyo","juku","sonota","juku","gakko","juku","kokoro","gakko","juku","gakko","juku","sonota","gakko","gakko","gakko"];
+    const COUNTS = {"sonota":17,"kokoro":25,"incomplete":0,"poll":30,"gakko":74,"juku":35,"benkyo":37,"qa":188};
+    const QA_KEYS = ['juku','gakko','benkyo','kokoro','sonota'];
+    const SUB_LABELS = {juku:'塾のこと', gakko:'学校・受験情報', benkyo:'勉強法・家庭学習', kokoro:'声かけ・メンタル', sonota:'その他'};
+
+    // state: mainTab = 'poll' | 'qa' | 'incomplete', subCat = 'all' | one of QA_KEYS
+    let mainTab = 'qa';
+    let subCat = 'all';
+    let filteredImages = [];
+    let lbIndex = 0;
+
+    function getFiltered() {
+      if (mainTab === 'poll') return ALL_IMAGES.filter(i => CAT_BY_IDX[i.idx] === 'poll');
+      if (mainTab === 'incomplete') return ALL_IMAGES.filter(i => CAT_BY_IDX[i.idx] === 'incomplete');
+      if (subCat === 'all') return ALL_IMAGES.filter(i => QA_KEYS.includes(CAT_BY_IDX[i.idx]));
+      return ALL_IMAGES.filter(i => CAT_BY_IDX[i.idx] === subCat);
+    }
+
+    function renderBars() {
+      const tabRow = document.getElementById('tab-row');
+      tabRow.innerHTML = '';
+      const tabs = [['poll', 'アンケート (' + COUNTS.poll + ')'], ['qa', 'Q&A (' + COUNTS.qa + ')']];
+      if (mainTab === 'incomplete') tabs.push(['incomplete', '要確認 (' + COUNTS.incomplete + ')']);
+      tabs.forEach(([key, label]) => {
+        const b = document.createElement('button');
+        b.className = 'filter-btn' + (mainTab === key ? ' active' : '');
+        b.textContent = label;
+        b.onclick = () => { mainTab = key; if (key !== 'qa') subCat = 'all'; render(); };
+        tabRow.appendChild(b);
+      });
+      const subRow = document.getElementById('sub-row');
+      subRow.innerHTML = '';
+      subRow.classList.toggle('show', mainTab === 'qa');
+      if (mainTab === 'qa') {
+        const subs = [['all', 'すべて (' + COUNTS.qa + ')']].concat(
+          QA_KEYS.map(k => [k, SUB_LABELS[k] + ' (' + COUNTS[k] + ')']));
+        subs.forEach(([key, label]) => {
+          const b = document.createElement('button');
+          b.className = 'sub-btn' + (subCat === key ? ' active' : '');
+          b.textContent = label;
+          b.onclick = () => { subCat = key; render(); };
+          subRow.appendChild(b);
+        });
+      }
+      document.getElementById('review-note').classList.toggle('show', mainTab === 'incomplete');
+    }
+
+    function render() {
+      renderBars();
+      filteredImages = getFiltered();
+      document.getElementById('count-bar').textContent = filteredImages.length + ' 枚を表示中';
+      const grid = document.getElementById('gallery-grid');
+      grid.innerHTML = '';
+      filteredImages.forEach((img, i) => {
+        const item = document.createElement('div');
+        item.className = 'gallery-item';
+        item.onclick = () => openLb(i);
+        item.innerHTML = `
+          <img src="${img.src}" alt="${img.name}" loading="lazy">
+          <div class="overlay"><span>${img.name}</span></div>
+        `;
+        grid.appendChild(item);
+      });
+    }
+
+    // Lightbox
+    function openLb(i) {
+      lbIndex = i;
+      updateLb();
+      document.getElementById('lightbox').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLb() {
+      document.getElementById('lightbox').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function updateLb() {
+      const img = filteredImages[lbIndex];
+      document.getElementById('lb-img').src = img.src;
+      document.getElementById('lb-counter').textContent = `${lbIndex + 1} / ${filteredImages.length}`;
+      document.getElementById('lb-filename').textContent = img.name;
+    }
+
+    function lbPrev() {
+      lbIndex = (lbIndex - 1 + filteredImages.length) % filteredImages.length;
+      updateLb();
+    }
+
+    function lbNext() {
+      lbIndex = (lbIndex + 1) % filteredImages.length;
+      updateLb();
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', e => {
+      if (!document.getElementById('lightbox').classList.contains('open')) return;
+      if (e.key === 'ArrowLeft') lbPrev();
+      if (e.key === 'ArrowRight') lbNext();
+      if (e.key === 'Escape') closeLb();
+    });
+
+    // Close lightbox on background click
+    document.getElementById('lightbox').addEventListener('click', e => {
+      if (e.target === document.getElementById('lightbox')) closeLb();
+    });
+
+    // Initial state from URL: ?cat=poll|qa|juku|gakko|benkyo|kokoro|sonota|incomplete
+    (function initFilter(){
+      const p = new URLSearchParams(location.search);
+      let f = p.get('cat') || p.get('filter') || 'qa';
+      if (f === 'アンケート') f = 'poll';
+      if (f === 'その他' || f === 'それ以外' || f === 'other') f = 'qa';
+      if (f === 'poll' || f === 'incomplete') { mainTab = f; }
+      else if (QA_KEYS.includes(f)) { mainTab = 'qa'; subCat = f; }
+      else { mainTab = 'qa'; subCat = 'all'; }
+      render();
+    })();
+  </script>
+</body>
+</html>
